@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Colours sampled from the ED Blueprint logo -->
+    <color name="ed_black">#0B0B0B</color>
+    <color name="ed_red">#E02020</color>
+    <color name="ed_orange">#F05A20</color>
+</resources>

@@ -1,0 +1,47 @@
+name: Android build
+
+# Builds the app on every push and pull request, and can also be started by hand
+# from the Actions tab ("Run workflow"). The debug APK is saved as a download.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 8.9
+
+      # Optional: add a repository variable named EDB_API_BASE_URL
+      # (Settings > Secrets and variables > Actions > Variables)
+      # to build against your real server. Otherwise gradle.properties is used.
+      - name: Build debug APK
+        env:
+          API_URL: ${{ vars.EDB_API_BASE_URL }}
+        run: |
+          if [ -n "$API_URL" ]; then
+            gradle assembleDebug --stacktrace -PEDB_API_BASE_URL="$API_URL"
+          else
+            gradle assembleDebug --stacktrace
+          fi
+
+      - name: Save the APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ed-blueprint-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
